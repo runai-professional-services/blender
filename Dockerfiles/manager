@@ -1,0 +1,26 @@
+FROM alpine:latest
+
+# Install necessary packages
+RUN apk add --no-cache python3 py3-pip bash wget vim tar gzip nfs-utils
+RUN apk add --no-cache build-base linux-headers
+
+# Create the /etc/flamenco directory before extraction
+RUN mkdir -p /etc/flamenco
+
+# Download Flamenco
+RUN wget https://flamenco.blender.org/downloads/flamenco-3.5-linux-amd64.tar.gz -O /tmp/flamenco.tar.gz
+
+# Extract Flamenco
+RUN tar -xzf /tmp/flamenco.tar.gz -C /etc/flamenco --strip-components=1
+
+# Copy configuration file
+COPY flamenco-manager.yaml /etc/flamenco-manager.yaml
+
+# Set the working directory
+WORKDIR /etc/flamenco
+
+# Expose Flamenco's port
+EXPOSE 8080
+
+# Keep the container alive
+CMD ["sleep", "infinity"]

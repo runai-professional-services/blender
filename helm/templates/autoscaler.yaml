@@ -1,0 +1,778 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-external-metrics-reader
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-external-metrics-reader
+rules:
+- apiGroups:
+  - external.metrics.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - configmaps/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resources:
+  - external
+  - pods
+  - secrets
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - limitranges
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - get
+- apiGroups:
+  - '*'
+  resources:
+  - '*/scale'
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - statefulsets
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - '*'
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - '*'
+- apiGroups:
+  - eventing.keda.sh
+  resources:
+  - cloudeventsources
+  - cloudeventsources/status
+  verbs:
+  - '*'
+- apiGroups:
+  - keda.sh
+  resources:
+  - clustertriggerauthentications
+  - clustertriggerauthentications/status
+  verbs:
+  - '*'
+- apiGroups:
+  - keda.sh
+  resources:
+  - scaledjobs
+  - scaledjobs/finalizers
+  - scaledjobs/status
+  verbs:
+  - '*'
+- apiGroups:
+  - keda.sh
+  resources:
+  - scaledobjects
+  - scaledobjects/finalizers
+  - scaledobjects/status
+  verbs:
+  - '*'
+- apiGroups:
+  - keda.sh
+  resources:
+  - triggerauthentications
+  - triggerauthentications/status
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: keda-operator
+subjects:
+- kind: ServiceAccount
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-auth-reader
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-auth-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-hpa-controller-external-metrics
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-hpa-controller-external-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: keda-external-metrics-reader
+subjects:
+- kind: ServiceAccount
+  name: horizontal-pod-autoscaler
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: keda-operator
+subjects:
+- kind: ServiceAccount
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-system-auth-delegator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-system-auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: admission-webhooks
+    app.kubernetes.io/created-by: keda
+    app.kubernetes.io/instance: admission-webhooks
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-admission-webhooks
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  ports:
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 9443
+  - name: metrics
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: keda-admission-webhooks
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-metrics-apiserver
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-metrics-apiserver
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 6443
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: keda-metrics-apiserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  ports:
+  - name: metricsservice
+    port: 9666
+    targetPort: 9666
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: keda-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-admission-webhooks
+    app.kubernetes.io/component: admission-webhooks
+    app.kubernetes.io/name: admission-webhooks
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-admission
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-admission-webhooks
+  template:
+    metadata:
+      labels:
+        app: keda-admission-webhooks
+        name: keda-admission-webhooks
+      name: keda-admission-webhooks
+    spec:
+      containers:
+      - args:
+        - --zap-log-level=info
+        - --zap-encoder=console
+        - --zap-time-encoding=rfc3339
+        command:
+        - /keda-admission-webhooks
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: KEDA_HTTP_DEFAULT_TIMEOUT
+          value: ""
+        image: ghcr.io/kedacore/keda-admission-webhooks:2.15.1
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 25
+        name: keda-admission-webhooks
+        ports:
+        - containerPort: 9443
+          name: http
+          protocol: TCP
+        - containerPort: 8080
+          name: metrics
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 20
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /certs
+          name: certificates
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: keda-operator
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: certificates
+        secret:
+          defaultMode: 420
+          secretName: kedaorg-certs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-metrics-apiserver
+    app.kubernetes.io/name: keda-metrics-apiserver
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-metrics-apiserver
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-metrics-apiserver
+  template:
+    metadata:
+      labels:
+        app: keda-metrics-apiserver
+      name: keda-metrics-apiserver
+    spec:
+      containers:
+      - args:
+        - /usr/local/bin/keda-adapter
+        - --secure-port=6443
+        - --logtostderr=true
+        - --stderrthreshold=ERROR
+        - --v=0
+        - --client-ca-file=/certs/ca.crt
+        - --tls-cert-file=/certs/tls.crt
+        - --tls-private-key-file=/certs/tls.key
+        - --cert-dir=/certs
+        env:
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: KEDA_HTTP_DEFAULT_TIMEOUT
+          value: ""
+        image: ghcr.io/kedacore/keda-metrics-apiserver:2.15.1
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 6443
+            scheme: HTTPS
+          initialDelaySeconds: 5
+        name: keda-metrics-apiserver
+        ports:
+        - containerPort: 6443
+          name: https
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 6443
+            scheme: HTTPS
+          initialDelaySeconds: 5
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /tmp
+          name: temp-vol
+        - mountPath: /certs
+          name: certificates
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: keda-operator
+      volumes:
+      - emptyDir: {}
+        name: temp-vol
+      - name: certificates
+        secret:
+          defaultMode: 420
+          secretName: kedaorg-certs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-operator
+    app.kubernetes.io/component: operator
+    app.kubernetes.io/name: keda-operator
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-operator
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-operator
+  template:
+    metadata:
+      labels:
+        app: keda-operator
+        name: keda-operator
+      name: keda-operator
+    spec:
+      containers:
+      - args:
+        - --leader-elect
+        - --zap-log-level=info
+        - --zap-encoder=console
+        - --zap-time-encoding=rfc3339
+        - --enable-cert-rotation=true
+        command:
+        - /keda
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: KEDA_HTTP_DEFAULT_TIMEOUT
+          value: ""
+        image: ghcr.io/kedacore/keda:2.15.1
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 25
+        name: keda-operator
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 20
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /certs
+          name: certificates
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: keda-operator
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: certificates
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: kedaorg-certs
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  labels:
+    app.kubernetes.io/name: v1beta1.external.metrics.k8s.io
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: v1beta1.external.metrics.k8s.io
+spec:
+  group: external.metrics.k8s.io
+  groupPriorityMinimum: 100
+  service:
+    name: keda-metrics-apiserver
+    namespace: runai-{{ .Values.runai.project.name }}
+  version: v1beta1
+  versionPriority: 100
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    app.kubernetes.io/component: admission-webhooks
+    app.kubernetes.io/created-by: keda
+    app.kubernetes.io/instance: admission-webhooks
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: keda-operator
+    app.kubernetes.io/version: 2.15.1
+  name: keda-admission
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: keda-admission-webhooks
+      namespace: runai-{{ .Values.runai.project.name }}
+      path: /validate-keda-sh-v1alpha1-scaledobject
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: vscaledobject.kb.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - keda.sh
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - scaledobjects
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: keda-admission-webhooks
+      namespace: runai-{{ .Values.runai.project.name }}
+      path: /validate-keda-sh-v1alpha1-scaledjob
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: vscaledjob.kb.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - keda.sh
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - scaledjobs
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: keda-admission-webhooks
+      namespace: runai-{{ .Values.runai.project.name }}
+      path: /validate-keda-sh-v1alpha1-triggerauthentication
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: vstriggerauthentication.kb.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - keda.sh
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - triggerauthentications
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: keda-admission-webhooks
+      namespace: runai-{{ .Values.runai.project.name }}
+      path: /validate-keda-sh-v1alpha1-clustertriggerauthentication
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: vsclustertriggerauthentication.kb.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - keda.sh
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clustertriggerauthentications
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: keda-admission-webhooks
+      namespace: runai-{{ .Values.runai.project.name }}
+      path: /validate-eventing-keda-sh-v1alpha1-cloudeventsource
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: vcloudeventsource.kb.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - eventing.keda.sh
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cloudeventsources
+  sideEffects: None
+  timeoutSeconds: 10

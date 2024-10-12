@@ -1,0 +1,48 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
+  "elements": [
+    {
+      "id": "3nz9iKxlmNMVvqGtdEp-5",
+      "type": "text",
+      "x": -753.57684338282,
+      "y": -117.89380690029714,
+      "width": 1427.897078442574,
+      "height": 108.9931640625,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 1379308084,
+      "version": 105,
+      "versionNonce": 1722128652,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1728409077759,
+      "link": null,
+      "locked": false,
+      "text": "What is blender and who uses it?",
+      "fontSize": 87.19453125000005,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 76.99999999999993,
+      "containerId": null,
+      "originalText": "What is blender and who uses it?",
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

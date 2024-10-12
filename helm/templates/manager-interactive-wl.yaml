@@ -1,0 +1,45 @@
+apiVersion: run.ai/v2alpha1
+kind: InteractiveWorkload
+metadata:
+  name: blender-scheduler
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  command:
+    value: "sh"
+  arguments:
+    value: "-c 'cp /tmp/flamenco-manager.yaml /etc/flamenco/ && /etc/flamenco/flamenco-manager'"
+  configMapVolumes:
+    items:
+      config-map:
+        value:
+          mountPath: /tmp
+          name: flamenco-config
+  cpu:
+    value: '0.1'
+  exposedUrls:
+    items:
+      url:
+        value:
+          containerPort: {{ .Values.flamenco.port }}
+  gpuDevices:
+    value: 0
+  image:
+    value: dswhitehouse/flamenco-manager:0.3
+  imagePullPolicy:
+    value: IfNotPresent
+  labels:
+    items:
+      run.ai/control-plane-managed:
+        value: 'true'
+  memory:
+    value: 100M
+  name:
+    value: blender-scheduler
+  nfs:
+    items:
+      nfs:
+        value:
+          nfsServer: {{ .Values.nfs.server }}
+          readOnly: false
+          sourcePath: {{ .Values.nfs.path }}
+          targetPath: /mnt

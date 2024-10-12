@@ -1,0 +1,21 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: blender-scaler
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  scaleTargetRef:
+    name: render-farm
+  minReplicaCount: {{ .Values.workers.min_replicas}}
+  maxReplicaCount: {{ .Values.workers.max_replicas}}
+  cooldownPeriod: {{ .Values.workers.scaling.cool_down_period }}
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-operated.runai.svc.cluster.local:9090
+      metricName: runai_gpu_utilization_per_project
+      query: |
+        avg(rate(runai_gpu_utilization_per_project{project="blender"}[{{ .Values.workers.scaling.sample_period }}])) * 100
+      threshold: "{{ .Values.workers.scaling.threshold }}"
+      activationThreshold: "{{ .Values.workers.scaling.activation_threshold }}"
+      

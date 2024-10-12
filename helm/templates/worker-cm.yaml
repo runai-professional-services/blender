@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flamenco-worker
+  namespace: runai-{{ .Values.runai.project.name }}
+  labels:
+    run.ai/resource: flamenco
+data:
+  flamenco-worker.yaml: |-
+    manager_url: http://flamenco-service:8080
+    task_types: [blender, ffmpeg, file-management, misc]
+    restart_exit_code: 47
+
+    # Optional advanced option, available on Linux only:
+    oom_score_adjust: 500

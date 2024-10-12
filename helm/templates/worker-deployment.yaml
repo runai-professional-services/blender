@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: render-farm
+  namespace: runai-{{ .Values.runai.project.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flamenco-worker
+  template:
+    metadata:
+      labels:
+        app: flamenco-worker
+    spec:
+      priorityClassName: interactive-preemptible
+      schedulerName: runai-scheduler
+      securityContext:
+        runAsUser: 0  
+        fsGroup: 0
+      initContainers:
+      - name: wait-for-manager
+        imagePullPolicy: Always
+        image: appropriate/curl
+        command: ['sh', '-c']
+        args:
+        - |
+          until curl -sS http://flamenco-service:8080 > /dev/null; do
+            echo "Waiting for Flamenco Manager to be live...";
+            sleep 5;
+          done;
+      containers:
+      - name: flamenco-worker
+        securityContext:
+          privileged: true
+          runAsUser: 0 
+          readOnlyRootFilesystem: false
+        imagePullPolicy: Always
+        image: dswhitehouse/blender-worker:0.5
+        command: ["./flamenco-worker"]
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"     
+          limits:
+            nvidia.com/gpu: {{ .Values.workers.gpu_count }}
+            memory: "8Gi"  
+            cpu: "6"
+        volumeMounts:
+        - name: gpu-enable-script
+          mountPath: /etc/blender/gpu-enable.py
+          subPath: gpu-enable.py
+        - name: blender-storage
+          mountPath: /mnt
+        - name: flamenco-config-worker
+          mountPath: /etc/flamenco/flamenco-worker.yaml
+          subPath: flamenco-worker.yaml
+      volumes:
+      - name: flamenco-config-worker
+        configMap:
+          name: flamenco-worker 
+      - name: blender-storage
+        nfs:
+          server: {{ .Values.nfs.server }} 
+          path: {{ .Values.nfs.path }}
+          readOnly: false
+      - name: gpu-enable-script
+        configMap:
+          name: gpu-enable

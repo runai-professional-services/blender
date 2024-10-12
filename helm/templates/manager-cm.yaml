@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flamenco-config
+  namespace: runai-{{ .Values.runai.project.name }}
+  labels:
+    run.ai/resource: flamenco
+data:
+  flamenco-manager.yaml: |-
+    _meta:
+      version: 3
+    manager_name: Flamenco
+    database: flamenco-manager.sqlite
+    database_check_period: 10m0s
+    listen: :8080
+    autodiscoverable: true
+    local_manager_storage_path: ./flamenco-manager-storage
+    shared_storage_path: /mnt
+    shaman:
+      enabled: false
+      garbageCollect:
+        period: 24h0m0s
+        maxAge: 744h0m0s
+        extraCheckoutPaths: []
+    task_timeout: 10m0s
+    worker_timeout: 1m0s
+    blocklist_threshold: 3
+    task_fail_after_softfail_count: 3
+    mqtt:
+      client:
+        broker: ""
+        clientID: flamenco
+        topic_prefix: flamenco
+        username: ""
+        password: ""
+    variables:
+      my_storage:
+        is_twoway: true
+        values:
+        - platform: linux
+          value: /mnt
+        - platform: windows
+          value: Z:\
+        - platform: darwin
+          value: /Volumes/shared/flamenco
+      blender:
+        values:
+        - platform: linux
+          value: /etc/blender/blender
+        - platform: windows
+          value: blender
+        - platform: darwin
+          value: blender
+      blenderArgs:
+        values:
+        - platform: all
+          value: -b -y --python /etc/blender/gpu-enable.py
