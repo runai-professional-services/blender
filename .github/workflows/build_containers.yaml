@@ -28,10 +28,10 @@ jobs:
 
     - name: Build and push Blender Worker image
       run: |
-        docker build -t ghcr.io/runai-professional-services/blender/blender-worker:0.1 ./path_to_worker_dockerfile
+        docker build -t ghcr.io/runai-professional-services/blender/blender-worker:0.1 ./Dockerfiles/worker
         docker push ghcr.io/runai-professional-services/blender/blender-worker:0.1
 
     - name: Build and push Blender Manager image
       run: |
-        docker build -t ghcr.io/runai-professional-services/blender/blender-manager:0.1 ./path_to_manager_dockerfile
+        docker build -t ghcr.io/runai-professional-services/blender/blender-manager:0.1 ./Dockerfiles/manager
         docker push ghcr.io/runai-professional-services/blender/blender-manager:0.1
