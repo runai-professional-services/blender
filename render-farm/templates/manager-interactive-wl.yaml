@@ -24,7 +24,7 @@ spec:
   gpuDevices:
     value: 0
   image:
-    value: dswhitehouse/flamenco-manager:0.3
+    value: {{ .Values.image.manager | quote }}
   imagePullPolicy:
     value: IfNotPresent
   labels:

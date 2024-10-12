@@ -33,4 +33,4 @@ data:
         return activated_gpus
 
 
-    enable_gpus("CUDA")
+    enable_gpus("{{ .Values.rendering.cycles_device }}")

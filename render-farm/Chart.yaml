@@ -1,0 +1,13 @@
+apiVersion: v2
+name: render-farm
+description: A Helm chart to deploy and autoscaling rendering farm, based on the blender to the Run AI platform
+type: application
+version: 0.1.0
+home: https://github.com/runai-professional-services/blender
+maintainers:
+  - name: Dave Whitehouse
+    email: david.whitehouse@run.ai
+    url: https://github.com/swiftsuretech
+icon: https://preview.redd.it/thoughts-on-the-new-icon-v0-u69i2f7fuadc1.jpeg?auto=webp&s=cb951a547ecf8f3f3e8b661f26bcf3e9458b809c
+appVersion: The version of the app that this contains (optional). Needn't be SemVer. Quotes recommended.
+deprecated: false

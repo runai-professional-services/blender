@@ -1,0 +1,34 @@
+runai:
+  project:
+    name: 'blender'
+
+nfs:
+  server: 172.20.10.47 
+  path: /export
+  windows:
+    mount: 'Z:\' 
+  mac:
+    mount: '/Volumes/shared/flamenco'
+  linux:
+    mount: '/mnt'
+
+rendering:
+  cycles_device: 'CUDA'
+
+image:
+  worker: 'dswhitehouse/blender-worker:0.5'
+  manager: 'dswhitehouse/flamenco-manager:0.3' 
+
+workers:
+  gpu_count: '1'
+  min_replicas: '1'
+  max_replicas: '10'
+  scaling:
+    sample_period: '2m'
+    threshold: '50'
+    activation_threshold: '40'
+    # Number of seconds to wait after scaling operations before conducting another
+    cool_down_period: '60'
+
+flamenco:
+  port: 8080

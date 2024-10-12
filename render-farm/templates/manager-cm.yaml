@@ -38,11 +38,11 @@ data:
         is_twoway: true
         values:
         - platform: linux
-          value: /mnt
+          value: "{{ .Values.nfs.linux.mount }}""
         - platform: windows
-          value: Z:\
+          value: "{{ .Values.nfs.windows.mount }}"
         - platform: darwin
-          value: /Volumes/shared/flamenco
+          value: "{{ .Values.nfs.mac.mount }}""
       blender:
         values:
         - platform: linux

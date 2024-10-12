@@ -36,7 +36,7 @@ spec:
           runAsUser: 0 
           readOnlyRootFilesystem: false
         imagePullPolicy: Always
-        image: dswhitehouse/blender-worker:0.5
+        image: {{ .Values.image.worker | quote }}
         command: ["./flamenco-worker"]
         ports:
         - containerPort: 8080
