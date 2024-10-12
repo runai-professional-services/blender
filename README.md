@@ -49,7 +49,8 @@ It is a hard requirement that the same NFS share is mounted on the users worksta
 
 ## Usage
 
+- Create a project in Run AI with a GPU quota and enable over-quota.
 - Clone this repo to you blender machine
 - Change into the "render-farm" directory
-- edit "values.yaml"
+- edit "values.yaml". Ensure the project name is correct and update the paramaters for your NFS Share
 - Install the helm chart using `helm install blender . -f values.yaml`
