@@ -1,5 +1,10 @@
 # Autoscaling render farm for Blender
 
+<p align="left">
+  <img src="images/runai-icon.jpg" alt="blender" width="100" />
+  <img src="images/blender-icon.png" alt="blender" width="100" />
+</p>
+
 ## Overview
 
 Welcome to the Run AI Blender Rendering Farm project! This project is designed to streamline and scale 3D rendering tasks using a Kubernetes-based architecture integrated with Run:AI. By leveraging GPU acceleration, our rendering farm efficiently processes Blender jobs, providing both scalability and performance.
@@ -39,7 +44,8 @@ The worker group in the rendering farm is an autoscaling group that uses the ful
 
 The chart may be configured prior to install by editing the relevant fields in values.yaml file. Although most of the default parameters may remain as is, it's important to ensure that the fields relating to NFS storage are correctly updated for your use case.
 
-It is a hard requirement that the same NFS share is mounted on the users workstation. The default drive (Windows) is 'Z:\'. Defaults for Windows and other OS may be set in values.yaml
+> [!NOTE]
+It is a hard requirement that the same NFS share is mounted on the users workstation. The > default drive (Windows) is 'Z:\'. Defaults for Windows and other OS may be set in values.yaml
 
 ## Usage
 
