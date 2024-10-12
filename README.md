@@ -31,7 +31,7 @@ Before setting up the Blender Rendering Farm, ensure you have the following depe
 ## Architecture
 
 <p align="center">
-  <img src="architecture/architecture.png" alt="Architecture" width="500" />
+  <img src="architecture/architecture.png" alt="Architecture" width="800" />
 </p>
 
 ## Scope
