@@ -16,8 +16,8 @@ rendering:
   cycles_device: 'CUDA'
 
 image:
-  worker: ghcr.io/runai-professional-services/blender/blender-worker:0.1
-  manager: ghcr.io/runai-professional-services/blender/blender-manager:0.1
+  worker: dswhitehouse/blender-worker:latest
+  manager: dswhitehouse/blender-manager:latest
 
 workers:
   gpu_count: '1'
