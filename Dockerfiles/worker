@@ -13,7 +13,6 @@ RUN wget https://mirrors.ocf.berkeley.edu/blender/release/Blender4.2/blender-4.2
 
 RUN tar -xzf /tmp/flamenco.tar.gz -C /etc/flamenco --strip-components=1
 RUN tar -xf /tmp/blender.tar.xz -C /etc/blender --strip-components=1
-RUN pip3 install bpy
 
 
 WORKDIR /etc/flamenco

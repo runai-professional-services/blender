@@ -24,7 +24,7 @@ spec:
   gpuDevices:
     value: 0
   image:
-    value: {{ .Values.image.manager | quote }}
+    value: {{ .Values.image.manager }}
   imagePullPolicy:
     value: IfNotPresent
   labels:

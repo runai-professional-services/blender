@@ -16,8 +16,8 @@ rendering:
   cycles_device: 'CUDA'
 
 image:
-  worker: 'dswhitehouse/blender-worker:0.5'
-  manager: 'dswhitehouse/flamenco-manager:0.3' 
+  worker: ghcr.io/runai-professional-services/blender/blender-worker:0.1
+  manager: ghcr.io/runai-professional-services/blender/blender-manager:0.1
 
 workers:
   gpu_count: '1'
