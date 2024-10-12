@@ -3,6 +3,8 @@ kind: ScaledObject
 metadata:
   name: blender-scaler
   namespace: runai-{{ .Values.runai.project.name }}
+  annotations:
+    "helm.sh/hook": post-install
 spec:
   scaleTargetRef:
     name: render-farm
@@ -18,4 +20,3 @@ spec:
         avg(rate(runai_gpu_utilization_per_project{project="blender"}[{{ .Values.workers.scaling.sample_period }}])) * 100
       threshold: "{{ .Values.workers.scaling.threshold }}"
       activationThreshold: "{{ .Values.workers.scaling.activation_threshold }}"
-      
