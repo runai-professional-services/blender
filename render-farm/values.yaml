@@ -20,14 +20,13 @@ image:
   manager: dswhitehouse/blender-manager:latest
 
 workers:
-  gpu_count: '1'
+  gpu_count: '1'  # LEAVE THIS AT WHOLE GPU FOR NOW  For fractions use, for eg, '0.5'
   min_replicas: '1'
   max_replicas: '10'
   scaling:
     sample_period: '2m'
     threshold: '50'
-    activation_threshold: '40'
-    # Number of seconds to wait after scaling operations before conducting another
+    activation_threshold: '40'  # Number of seconds to wait after scaling operations before conducting another
     cool_down_period: '60'
 
 flamenco:
